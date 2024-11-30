@@ -41,9 +41,9 @@ export default StyleSheet.create({
   },
   optionButton: {
     backgroundColor: '#317de0', // Cor principal consistente para botões
-    paddingVertical: 14,
+    paddingVertical: 10,
     borderRadius: 120,
-    marginVertical: 8,
+    marginVertical: 4,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
