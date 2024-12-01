@@ -14,7 +14,7 @@ export function PizzaChart({ data }) {
         data={data}
         radius={100}  // Define o raio do gráfico para dar mais espaço ao layout
         innerRadius={60}  // Cria um espaço vazio no centro (gráfico em forma de anel)
-        strokeWidth={10}  // Adiciona a espessura ao contorno das fatias
+        strokeWidth={5}  // Diminui a espessura do contorno das fatias
         duration={800}  // Tempo da animação para transição suave
         showText={true}  // Exibe as porcentagens dentro de cada fatia
         textSize={14}  // Tamanho do texto exibido dentro das fatias
@@ -29,9 +29,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: 250,
-    marginVertical: 20,
+    marginVertical: 30,
     backgroundColor: '#fff',
-    borderRadius: 15, // Borda arredondada para o gráfico
+    borderRadius: 30, // Borda arredondada para o gráfico
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.1,

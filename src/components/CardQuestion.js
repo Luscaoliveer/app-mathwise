@@ -1,51 +1,68 @@
-import { Alert, Text, View, Pressable, ScrollView } from 'react-native';
+import { Text, View, Pressable, Modal } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import styles from '../styles/styles';
 
 // Função para determinar a cor com base no nível de dificuldade
-const getDifficultyColor = level => {
+const getDifficultyColor = (level) => {
   switch (level) {
     case 'facil':
-      return '#3CB371'; // Green
+      return '#2E8B57'; // Green
     case 'medio':
-      return '#F0E68C'; // Yellow
+      return '#FF6347'; // Orange
     case 'dificil':
-      return '#FF6347'; // Red
+      return '#DC143C'; // Red
     default:
       return '#000'; // Default black
   }
 };
 
 export const CardQuestion = ({ handlePress, item, index, total }) => {
+  // Estado para controlar a cor de fundo da tela com base no resultado
+  const [backgroundColor, setBackgroundColor] = useState('#fff');
+  const [modalVisible, setModalVisible] = useState(false); // Controla o modal
+
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+
   // Calcular a cor da dificuldade apenas quando necessário
   const difficultyColor = useMemo(
     () => getDifficultyColor(item.nivel_dificuldade),
-    [item.nivel_dificuldade],
+    [item.nivel_dificuldade]
   );
 
-  // Função que trata a resposta e exibe o alerta
+  // Função que trata a resposta e exibe o feedback
   const onPressHandler = useCallback(
     (resposta, item) => {
       const feedback = handlePress(resposta, item); // Retorna o feedback do exercício
-      Alert.alert('Resultado', feedback); // Exibe o feedback ao usuário
+
+      // Atualiza a cor de fundo de acordo com a resposta
+      if (resposta.correta) {
+        setBackgroundColor('#E6E6FA'); // Cor normal para resposta correta
+      } else {
+        setBackgroundColor('#ffbfb0'); // Cor vermelha para resposta errada
+      }
+
+      setFeedbackMessage(feedback); // Define a mensagem do feedback
+      setModalVisible(true); // Exibe o modal
     },
-    [handlePress],
+    [handlePress]
   );
 
   return (
     <View
-      style={[
+      style={[ 
         styles.fullScreenItemContainer,
-        { backgroundColor: item.feito ? '#bbb' : '#fff' }, // Modifica a cor do fundo dependendo do status 'feito'
-      ]}>
+        { backgroundColor: backgroundColor }, // Cor de fundo dinâmica
+      ]}
+    >
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: 10,
-        }}>
+        }}
+      >
         {/* Barra de progresso */}
         <View style={styles.progressBarContainer}>
           <FontAwesome
@@ -64,13 +81,14 @@ export const CardQuestion = ({ handlePress, item, index, total }) => {
           style={[
             styles.difficultyCircle,
             { backgroundColor: difficultyColor },
-          ]}>
+          ]}
+        >
           <Text style={styles.difficultyText}>{item.nivel_dificuldade}</Text>
         </View>
       </View>
 
       {/* Pergunta destacada */}
-      <Text style={styles.highlightedQuestion}>{item.pergunta}</Text>
+      <Text style={[styles.highlightedQuestion, { color: '#000' }]}>{item.pergunta}</Text>
 
       <View style={styles.optionsContainer}>
         {/* Mapeia as respostas e gera botões para cada uma */}
@@ -78,11 +96,59 @@ export const CardQuestion = ({ handlePress, item, index, total }) => {
           <Pressable
             key={idx}
             onPress={() => onPressHandler(resposta, item)} // Chama a função de tratamento da resposta
-            style={styles.optionButton}>
+            style={styles.optionButton}
+          >
             <Text style={styles.optionText}>{resposta.texto}</Text>
           </Pressable>
         ))}
       </View>
+
+      {/* Modal Customizado */}
+      <Modal
+        transparent={true}
+        animationType="fade"
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}
+        >
+          <View
+            style={{
+              width: '80%',
+              backgroundColor: '#fff',
+              padding: 20,
+              borderRadius: 15,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 5 },
+              shadowOpacity: 0.2,
+              shadowRadius: 10,
+              elevation: 5,
+            }}
+          >
+            <Text style={{ fontSize: 25, fontWeight: 'bold', marginBottom: 10 }}>
+              {feedbackMessage}
+            </Text>
+            <Pressable
+              onPress={() => setModalVisible(false)}
+              style={{
+                backgroundColor: '#4682B4',
+                paddingVertical: 10,
+                borderRadius: 60,
+                marginTop: 10,
+                alignItems: 'center',
+              }}
+            >
+              <Text style={{ color: '#fff', fontSize: 20 }}>Fechar</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

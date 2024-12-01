@@ -180,4 +180,6 @@ export default StyleSheet.create({
     right: 15,
     top: 15,
   },
+
+  
 });
